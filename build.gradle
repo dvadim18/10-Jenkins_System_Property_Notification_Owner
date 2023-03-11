@@ -1,0 +1,112 @@
+plugins {
+    id 'java-library'
+    id 'io.qameta.allure' version '2.11.2' // allure plugin https://plugins.gradle.org/plugin/io.qameta.allure
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+
+allure { //отвечает за появление папки build/allure-results https://github.com/allure-framework/allure-gradle
+    report { // cекция репорта
+        version.set("2.21.0") // https://github.com/allure-framework/allure2
+    }
+    adapter {
+        aspectjWeaver.set(true) // обработка аннотации @Step
+        frameworks {
+            junit5 { // используемый в отчете фреймворк
+                adapterVersion.set("2.19.0") // версия аллюра https://github.com/allure-framework/allure2
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2", // обязательно для использования JU5!
+            "org.junit.jupiter:junit-jupiter-engine:5.8.2",
+            "com.github.javafaker:javafaker:1.0.2",
+            "com.codeborne:selenide:6.11.2",
+            'io.qameta.allure:allure-selenide:2.21.0',//  https://mvnrepository.com/artifact/io.qameta.allure/allure-selenide/2.21.0
+            'org.slf4j:slf4j-simple:2.0.5'
+    )
+}
+
+
+tasks.withType(Test) {
+    systemProperties(System.getProperties()) // используется для передачи значений в код из "вне" -Dbrowser=chrome
+    useJUnitPlatform()
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out" // логи в терминале
+            exceptionFormat "short"
+        }
+    }
+}
+
+task smoke_tests (type: Test){
+    useJUnitPlatform{
+        includeTags("Smoke")
+    }
+}
+
+task system_properties (type: Test){
+    useJUnitPlatform{
+        includeTags("system_properties")
+
+    }
+}
+
+task system_properties_student_name (type: Test){
+    useJUnitPlatform{
+        includeTags("system_properties_student_name")
+    }
+}
+
+task RC (type: Test){
+    useJUnitPlatform{
+        includeTags("RC")
+        exclude("Smoke")
+    }
+}
+
+task TestBaseCFG (type: Test){
+    useJUnitPlatform{
+        includeTags("TestBaseCFG")
+        excludeTags("system_properties_student_name")
+    }
+}
+
+task FillFormAnnotatedSteps (type: Test){
+    useJUnitPlatform{
+        includeTags("FillFormAnnotatedSteps")
+    }
+}
+
+help {
+    doFirst {
+        println ""
+        println "************************************************************************ "
+        println "***                                                                  *** "
+        println "*** Welcome to https://github.com/dvadim18/10-Jenkins_Tasks          *** "
+        println "***                                                                  *** "
+        println "*** ./gradlew help                                                   *** "
+        println "***                                                                  *** "
+        println "************************************************************************ "
+        println ""
+    }
+
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+}
