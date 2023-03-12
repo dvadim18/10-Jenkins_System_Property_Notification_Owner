@@ -35,7 +35,8 @@ dependencies {
             "com.github.javafaker:javafaker:1.0.2",
             "com.codeborne:selenide:6.11.2",
             'io.qameta.allure:allure-selenide:2.21.0',//  https://mvnrepository.com/artifact/io.qameta.allure/allure-selenide/2.21.0
-            'org.slf4j:slf4j-simple:2.0.5'
+            'org.slf4j:slf4j-simple:2.0.5',
+            'org.aeonbits.owner:owner:1.0.12'
     )
 }
 
@@ -49,45 +50,6 @@ tasks.withType(Test) {
             events "started", "skipped", "failed", "standard_error", "standard_out" // логи в терминале
             exceptionFormat "short"
         }
-    }
-}
-
-task smoke_tests (type: Test){
-    useJUnitPlatform{
-        includeTags("Smoke")
-    }
-}
-
-task system_properties (type: Test){
-    useJUnitPlatform{
-        includeTags("system_properties")
-
-    }
-}
-
-task system_properties_student_name (type: Test){
-    useJUnitPlatform{
-        includeTags("system_properties_student_name")
-    }
-}
-
-task RC (type: Test){
-    useJUnitPlatform{
-        includeTags("RC")
-        exclude("Smoke")
-    }
-}
-
-task TestBaseCFG (type: Test){
-    useJUnitPlatform{
-        includeTags("TestBaseCFG")
-        excludeTags("system_properties_student_name")
-    }
-}
-
-task FillFormAnnotatedSteps (type: Test){
-    useJUnitPlatform{
-        includeTags("FillFormAnnotatedSteps")
     }
 }
 
